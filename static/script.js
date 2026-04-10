@@ -26,7 +26,6 @@ async function buscar(tipo) {
         limpiarArray();
         limpiarIndices();
 
-        // VISUALIZACIÓN ARRAY
         if (tipo === "lineal") {
             resaltarLineal(paso.index);
         }
@@ -43,10 +42,8 @@ async function buscar(tipo) {
             resaltarLineal(paso.index);
         }
 
-        // CÓDIGO
         resaltarCodigo(tipo, paso.linea);
 
-        // TABLA 
         agregarFila(
             tipo,
             pasoNum++,
@@ -55,18 +52,15 @@ async function buscar(tipo) {
             "-"
         );
 
-        // TIEMPO
         let ms = performance.now() - inicio;
         tiempoEl.innerText = `${ms.toFixed(2)} ms | ${(ms / 1000).toFixed(4)} s`;
 
         await esperar(350);
     }
 
-    // FINAL
     let msFinal = performance.now() - inicio;
     tiempoEl.innerText = `${msFinal.toFixed(2)} ms | ${(msFinal / 1000).toFixed(4)} s`;
 
-    // RESULTADO
     if (data.pos != -1) {
         marcar(data.pos);
         salida.innerText = valor;
@@ -77,6 +71,9 @@ async function buscar(tipo) {
 }
 
 
+// ==========================
+// UTILIDADES
+// ==========================
 function safeCaja(i) {
     let cajas = document.getElementsByClassName("caja");
     return (i >= 0 && i < cajas.length) ? cajas[i] : null;
@@ -104,6 +101,10 @@ function moverPointer(id, index) {
         `translateX(${x}px)`;
 }
 
+
+// ==========================
+// RESALTADO
+// ==========================
 function resaltarLineal(i) {
     let cajas = document.getElementsByClassName("caja");
 
@@ -116,7 +117,6 @@ function resaltarLineal(i) {
 }
 
 function resaltarBinaria(paso) {
-
     limpiarIndices();
 
     if (paso.l != null) {
@@ -136,7 +136,6 @@ function resaltarBinaria(paso) {
 }
 
 function resaltarInterpolacion(paso) {
-
     limpiarIndices();
 
     if (paso.low != null) {
@@ -160,6 +159,10 @@ function marcar(i) {
     if (c) c.classList.add("encontrado");
 }
 
+
+// ==========================
+// LIMPIEZA
+// ==========================
 function limpiarArray() {
     document.querySelectorAll(".caja")
         .forEach(c => c.classList.remove("activo", "encontrado", "descartado"));
@@ -175,13 +178,24 @@ function limpiarTodo() {
     limpiarIndices();
 }
 
+function limpiarTabla() {
+    document.querySelector("#tabla tbody").innerHTML = "";
+}
+
+
+// ==========================
+// TIEMPO
+// ==========================
 function esperar(ms) {
     return new Promise(resolve => {
         setTimeout(() => requestAnimationFrame(resolve), ms);
     });
 }
 
+
+// ==========================
 // CODIGO
+// ==========================
 function resaltarCodigo(tipo, linea) {
     limpiarCodigo();
 
@@ -200,7 +214,6 @@ function limpiarCodigo() {
     document.querySelectorAll(".codigo span")
         .forEach(l => l.classList.remove("activa", "resaltado"));
 }
-//  NO ENCONTRADO
 
 function resaltarNoEncontrado(tipo) {
     let pref = {
@@ -214,7 +227,10 @@ function resaltarNoEncontrado(tipo) {
     if (el) el.classList.add("resaltado");
 }
 
-// TABLA 
+
+// ==========================
+// TABLA
+// ==========================
 function agregarFila(tipo, paso, datos, valor, resultado) {
 
     let tabla = document.querySelector("#tabla tbody");
@@ -257,11 +273,10 @@ function agregarFila(tipo, paso, datos, valor, resultado) {
     tabla.appendChild(fila);
 }
 
-function limpiarTabla() {
-    document.querySelector("#tabla tbody").innerHTML = "";
-}
-//  ARRAY
 
+// ==========================
+// GENERAR ARRAY (🔥 ARREGLADO)
+// ==========================
 function generarArray(n) {
     let nuevo = [];
 
@@ -276,14 +291,20 @@ function generarArray(n) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ array: nuevo })
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) throw new Error("Error en servidor");
+        return res.json();
+    })
     .then(() => {
-        location.reload(); // opcional
+        location.reload(); // recarga con nuevo array
     })
     .catch(err => console.error("Error:", err));
 }
 
-//  CÓDIGO
+
+// ==========================
+// MOSTRAR CODIGO
+// ==========================
 function mostrarCodigo(tipo) {
     document.querySelectorAll(".bloque")
         .forEach(b => b.classList.remove("activo"));

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
+# ARRAY GLOBAL (IMPORTANTE)
 arr = [3, 7, 12, 18, 25, 30, 42]
 
 
@@ -11,6 +12,17 @@ arr = [3, 7, 12, 18, 25, 30, 42]
 @app.route('/')
 def index():
     return render_template('index.html', arreglo=arr)
+
+
+# ==========================
+# NUEVO ARRAY (🔥 ESTE FALTABA)
+# ==========================
+@app.route('/nuevo_array', methods=['POST'])
+def nuevo_array():
+    global arr
+    data = request.get_json()
+    arr = data["array"]
+    return jsonify({"ok": True})
 
 
 # ==========================
@@ -34,14 +46,12 @@ def lineal():
         if arr[i] == valor:
             comp += 1
 
-            # if true
             pasos.append({
                 "index": i,
                 "linea": 3,
                 "comp": comp
             })
 
-            # RETURN (IMPORTANTE)
             pasos.append({
                 "index": i,
                 "linea": 4,
@@ -70,7 +80,7 @@ def lineal():
 
 
 # ==========================
-# BINARIA (MEJOR CLARIDAD VISUAL)
+# BINARIA
 # ==========================
 @app.route('/binaria', methods=['POST'])
 def binaria():
@@ -84,65 +94,27 @@ def binaria():
         m = l + (r - l) // 2
         comp += 1
 
-        # calcular m
         pasos.append({
             "l": l,
             "r": r,
             "m": m,
             "linea": 4,
-            "fase": "calcular_m",
             "comp": comp
         })
 
-        comp += 1
         if arr[m] == valor:
-            pasos.append({
-                "l": l,
-                "r": r,
-                "m": m,
-                "linea": 5,
-                "fase": "encontrado",
-                "comp": comp
-            })
+            return jsonify({"pos": m, "pasos": pasos})
 
-            return jsonify({
-                "pos": m,
-                "pasos": pasos,
-                "complejidad": "O(log n)"
-            })
-
-        comp += 1
         if arr[m] < valor:
-            pasos.append({
-                "l": l,
-                "r": r,
-                "m": m,
-                "linea": 6,
-                "fase": "derecha",
-                "comp": comp
-            })
             l = m + 1
-
         else:
-            pasos.append({
-                "l": l,
-                "r": r,
-                "m": m,
-                "linea": 7,
-                "fase": "izquierda",
-                "comp": comp
-            })
             r = m - 1
 
-    return jsonify({
-        "pos": -1,
-        "pasos": pasos,
-        "complejidad": "O(log n)"
-    })
+    return jsonify({"pos": -1, "pasos": pasos})
 
 
 # ==========================
-# EXPONENCIAL (PASO A PASO LIMPIO)
+# EXPONENCIAL
 # ==========================
 @app.route('/exponencial', methods=['POST'])
 def exponencial():
@@ -151,120 +123,44 @@ def exponencial():
     comp = 0
 
     if arr[0] == valor:
-        pasos.append({
-            "index": 0,
-            "linea": 3,
-            "fase": "check_0",
-            "comp": 1
-        })
         return jsonify({"pos": 0, "pasos": pasos})
 
     i = 1
 
-    # expansión
     while i < len(arr) and arr[i] < valor:
-        comp += 1
-
-        pasos.append({
-            "index": i,
-            "linea": 5,
-            "fase": "expansion",
-            "comp": comp
-        })
-
+        pasos.append({"index": i, "linea": 5})
         i *= 2
 
     l = i // 2
     r = min(i, len(arr) - 1)
 
-    pasos.append({
-        "l": l,
-        "r": r,
-        "linea": 6,
-        "fase": "rango",
-        "comp": comp
-    })
-
-    # binaria interna
     while l <= r:
         m = l + (r - l) // 2
-        comp += 1
-
-        pasos.append({
-            "l": l,
-            "r": r,
-            "m": m,
-            "linea": 8,
-            "fase": "binaria",
-            "comp": comp
-        })
 
         if arr[m] == valor:
-            pasos.append({
-                "l": l,
-                "r": r,
-                "m": m,
-                "linea": 9,
-                "fase": "encontrado",
-                "comp": comp
-            })
-
-            return jsonify({
-                "pos": m,
-                "pasos": pasos,
-                "complejidad": "O(log n)"
-            })
+            return jsonify({"pos": m, "pasos": pasos})
 
         elif arr[m] < valor:
-            pasos.append({
-                "l": l,
-                "r": r,
-                "m": m,
-                "linea": 10,
-                "fase": "derecha",
-                "comp": comp
-            })
             l = m + 1
-
         else:
-            pasos.append({
-                "l": l,
-                "r": r,
-                "m": m,
-                "linea": 11,
-                "fase": "izquierda",
-                "comp": comp
-            })
             r = m - 1
 
-    return jsonify({
-        "pos": -1,
-        "pasos": pasos,
-        "complejidad": "O(log n)"
-    })
+    return jsonify({"pos": -1, "pasos": pasos})
 
 
 # ==========================
-# INTERPOLACIÓN (FIX DIV/0 + ESTABILIDAD)
+# INTERPOLACION
 # ==========================
 @app.route('/interpolacion', methods=['POST'])
 def interpolacion():
     valor = request.json['valor']
     pasos = []
-    comp = 0
 
     low, high = 0, len(arr) - 1
 
     while low <= high and arr[low] <= valor <= arr[high]:
 
         if arr[high] == arr[low]:
-            pasos.append({
-                "low": low,
-                "high": high,
-                "linea": 4,
-                "fase": "igual",
-                "comp": comp
-            })
             break
 
         pos = low + int(
@@ -272,65 +168,22 @@ def interpolacion():
             (arr[high] - arr[low])
         )
 
-        comp += 1
-
         pasos.append({
             "low": low,
             "high": high,
             "pos": pos,
-            "linea": 5,
-            "fase": "pos",
-            "comp": comp
+            "linea": 5
         })
 
-        if pos < 0 or pos >= len(arr):
-            break
-
-        comp += 1
-
         if arr[pos] == valor:
-            pasos.append({
-                "low": low,
-                "high": high,
-                "pos": pos,
-                "linea": 7,
-                "fase": "encontrado",
-                "comp": comp
-            })
-
-            return jsonify({
-                "pos": pos,
-                "pasos": pasos,
-                "complejidad": "O(log log n)"
-            })
+            return jsonify({"pos": pos, "pasos": pasos})
 
         elif arr[pos] < valor:
-            pasos.append({
-                "low": low,
-                "high": high,
-                "pos": pos,
-                "linea": 8,
-                "fase": "derecha",
-                "comp": comp
-            })
             low = pos + 1
-
         else:
-            pasos.append({
-                "low": low,
-                "high": high,
-                "pos": pos,
-                "linea": 9,
-                "fase": "izquierda",
-                "comp": comp
-            })
             high = pos - 1
 
-    return jsonify({
-        "pos": -1,
-        "pasos": pasos,
-        "complejidad": "O(log log n)"
-    })
+    return jsonify({"pos": -1, "pasos": pasos})
 
 
 # ==========================
