@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simulador PRO</title>
+    <link rel="stylesheet" href="/static/estilos.css">
+</head>
+<body>
+
+<!-- navbar -->
+<nav class="navbar">
+    <div class="logo">Simulador</div>
+
+    <div class="menu">
+        <button onclick="generarArray(5)">Pocos</button>
+        <button onclick="generarArray(10)">Varios</button>
+        <button onclick="generarArray(20)">Muchos</button>
+    </div>
+</nav>
+
+<h1>Simulador de Búsquedas</h1>
+
+<input type="number" id="valor" placeholder="Número">
+<button onclick="buscar('lineal')">Lineal</button>
+<button onclick="buscar('binaria')">Binaria</button>
+<button onclick="buscar('exponencial')">Exponencial</button>
+<button onclick="buscar('interpolacion')">Interpolación</button>
+
+<!-- contenedor -->
+<div class="contenedor">
+
+    <!-- array -->
+    <div class="array-container">
+
+        <!-- pointers -->
+        <div id="pointers">
+            <div id="ptrL" class="pointer">L</div>
+            <div id="ptrM" class="pointer">M</div>
+            <div id="ptrR" class="pointer">R</div>
+        </div>
+
+        <!-- array -->
+        <div id="array">
+
+            {% for num in arreglo %}
+            <div class="columna">
+                <div class="caja">{{num}}</div>
+                <div class="indice">{{loop.index0}}</div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+    <!-- info -->
+    <div class="info-panel">
+
+        <div class="box tiempo">
+            Tiempo: <span id="tiempo">0 ms</span>
+        </div>
+
+        <div class="box salida">
+            <div class="console" id="salida">
+                Esperando ejecución...
+            </div>
+        </div>
+
+    </div>
+
+    <!-- panel -->
+    <div class="panel">
+
+        <!-- codigo -->
+        <div class="codigo">
+
+<pre id="codigo-lineal" class="bloque activo">
+<span id="l1">int busquedaLineal(const vector&lt;int&gt;& a, int x){</span>
+<span id="l2"> for (size_t i=0;i&lt;a.size();++i)</span>
+<span id="l3">  if(a[i]==x)</span>
+<span id="l4">   return (int)i;</span>
+<span id="l5"> return -1;</span>
+<span id="l6">}</span>
+</pre>
+
+<pre id="codigo-binaria" class="bloque">
+<span id="b1">int busquedaBinaria(const vector&lt;int&gt;& a, int x){</span>
+<span id="b2"> int l=0, r=(int)a.size()-1;</span>
+<span id="b3"> while(l&lt;=r){</span>
+<span id="b4">  int m = l + (r-l)/2;</span>
+<span id="b5">  if(a[m]==x) return m;</span>
+<span id="b6">  else if(a[m]&lt;x) l=m+1;</span>
+<span id="b7">  else r=m-1;</span>
+<span id="b8"> }</span>
+<span id="b9"> return -1;</span>
+<span id="b10">}</span>
+</pre>
+
+<pre id="codigo-exponencial" class="bloque">
+<span id="e1">int busquedaExponencial(const vector&lt;int&gt;& a, int x){</span>
+<span id="e2"> if(a.empty()) return -1;</span>
+<span id="e3"> if(a[0]==x) return 0;</span>
+<span id="e4"> int i=1;</span>
+<span id="e5"> while(i&lt;(int)a.size() && a[i] &lt; x) i&lt;&lt;=1;</span>
+<span id="e6"> int l = i/2, r = min(i,(int)a.size()-1);</span>
+<span id="e7"> while(l&lt;=r){</span>
+<span id="e8">  int m = l + (r-l)/2;</span>
+<span id="e9">  if(a[m]==x) return m;</span>
+<span id="e10">  else if(a[m]&lt;x) l=m+1;</span>
+<span id="e11">  else r=m-1;</span>
+<span id="e12"> }</span>
+<span id="e13"> return -1;</span>
+<span id="e14">}</span>
+</pre>
+
+<pre id="codigo-interpolacion" class="bloque">
+<span id="i1">int busquedaInterpolacion(const vector&lt;int&gt;& a, int x){</span>
+<span id="i2"> int low=0, high=(int)a.size()-1;</span>
+<span id="i3"> while(low&lt;=high && x&gt;=a[low] && x&lt;=a[high]){</span>
+<span id="i4">  if(a[low]==a[high]) return (a[low]==x? low: -1);</span>
+<span id="i5">  long long pos = low + (long long)((double)(high-low)*((double)(x-a[low])/(double)(a[high]-a[low])));</span>
+<span id="i6">  if(pos&lt;low || pos&gt;high) break;</span>
+<span id="i7">  if(a[pos]==x) return (int)pos;</span>
+<span id="i8">  if(a[pos]&lt;x) low=(int)pos+1;</span>
+<span id="i9">  else high=(int)pos-1;</span>
+<span id="i10"> }</span>
+<span id="i11"> return -1;</span>
+<span id="i12">}</span>
+</pre>
+
+        </div>
+
+        <!-- tabla -->
+        <div class="tabla-container">
+            <h3>Tabla de búsqueda</h3>
+
+            <table id="tabla">
+                <thead>
+                    <tr>
+                        <th>Paso</th>
+                        <th>L / Índice</th>
+                        <th>M / Pos</th>
+                        <th>R / High</th>
+                        <th>Valor</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
