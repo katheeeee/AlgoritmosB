@@ -5,18 +5,11 @@ app = Flask(__name__)
 # ARRAY GLOBAL (IMPORTANTE)
 arr = [3, 7, 12, 18, 25, 30, 42]
 
-
-# ==========================
-# HOME
-# ==========================
 @app.route('/')
 def index():
     return render_template('index.html', arreglo=arr)
 
 
-# ==========================
-# NUEVO ARRAY (🔥 ESTE FALTABA)
-# ==========================
 @app.route('/nuevo_array', methods=['POST'])
 def nuevo_array():
     global arr
@@ -25,9 +18,6 @@ def nuevo_array():
     return jsonify({"ok": True})
 
 
-# ==========================
-# LINEAL
-# ==========================
 @app.route('/lineal', methods=['POST'])
 def lineal():
     valor = request.json['valor']
@@ -79,9 +69,6 @@ def lineal():
     })
 
 
-# ==========================
-# BINARIA
-# ==========================
 @app.route('/binaria', methods=['POST'])
 def binaria():
     valor = request.json['valor']
@@ -113,9 +100,6 @@ def binaria():
     return jsonify({"pos": -1, "pasos": pasos})
 
 
-# ==========================
-# EXPONENCIAL
-# ==========================
 @app.route('/exponencial', methods=['POST'])
 def exponencial():
     valor = request.json['valor']
@@ -148,9 +132,6 @@ def exponencial():
     return jsonify({"pos": -1, "pasos": pasos})
 
 
-# ==========================
-# INTERPOLACION
-# ==========================
 @app.route('/interpolacion', methods=['POST'])
 def interpolacion():
     valor = request.json['valor']
@@ -186,8 +167,5 @@ def interpolacion():
     return jsonify({"pos": -1, "pasos": pasos})
 
 
-# ==========================
-# RUN
-# ==========================
 if __name__ == '__main__':
     app.run(debug=True)
