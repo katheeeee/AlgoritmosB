@@ -1,13 +1,5 @@
 import tkinter as tk
 
-# -------------------------------
-# AFD: cadenas binarias que terminan en "01"
-# Estados:
-# q0 = inicial
-# q1 = último símbolo fue 0
-# q2 = termina en 01 (aceptación)
-# -------------------------------
-
 transiciones = {
     ('q0', '0'): 'q1',
     ('q0', '1'): 'q0',
@@ -23,10 +15,6 @@ estado_actual = "q0"
 cadena = ""
 indice = 0
 
-# -------------------------------
-# Ventana
-# -------------------------------
-
 root = tk.Tk()
 root.title("Simulación AFD")
 root.geometry("900x600")
@@ -34,9 +22,6 @@ root.geometry("900x600")
 canvas = tk.Canvas(root, width=900, height=400, bg="white")
 canvas.pack()
 
-# -------------------------------
-# Dibujar estados
-# -------------------------------
 
 pos = {
     "q0": (150,200),
@@ -107,9 +92,6 @@ def dibujar_automata():
 
 dibujar_automata()
 
-# -------------------------------
-# Etiquetas
-# -------------------------------
 
 lblCadena = tk.Label(root,text="",font=("Arial",16))
 lblCadena.pack()
@@ -120,9 +102,6 @@ lblEstado.pack()
 lblResultado = tk.Label(root,text="",font=("Arial",18,"bold"))
 lblResultado.pack()
 
-# -------------------------------
-# Entrada
-# -------------------------------
 
 frame=tk.Frame(root)
 frame.pack()
@@ -130,9 +109,6 @@ frame.pack()
 entrada=tk.Entry(frame,font=("Arial",16),width=20)
 entrada.pack(side=tk.LEFT)
 
-# -------------------------------
-# Simulación
-# -------------------------------
 
 def iniciar():
 
@@ -189,9 +165,6 @@ def avanzar():
 
     root.after(1000,avanzar)
 
-# -------------------------------
-# Botón
-# -------------------------------
 
 btn=tk.Button(root,text="Simular",
               font=("Arial",14),
